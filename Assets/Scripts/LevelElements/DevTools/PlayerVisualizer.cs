@@ -24,7 +24,7 @@ public class PlayerVisualizerGizmos{
         Vector3 lowerLeftCorner = cam.ViewportToWorldPoint(new Vector3(1, 0, cam.transform.localPosition.y));
         Vector3 lowerRightCorner = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.transform.localPosition.y));
         Vector3 up = Vector3.up * cam.transform.localPosition.y;
-
+        
         Vector3[] points = {
             upperLeftCorner, upperRightCorner, lowerRightCorner, lowerLeftCorner, 
             upperLeftCorner, lowerRightCorner, upperRightCorner, lowerLeftCorner,

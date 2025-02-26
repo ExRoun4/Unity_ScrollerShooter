@@ -177,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   energyConsuptionPerUse: 0.05
   useCountdown: 0.3
-  damage: 0
+  damage: 0.15
   projectilePrefab: {fileID: 6618530282427245772, guid: 850bd53d8fc647941a2c6c288d66a891, type: 3}
   weaponLevelHolders:
   - level: 1

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class ObjectPool : MonoBehaviour
 {
@@ -90,6 +91,10 @@ public class ObjectPool : MonoBehaviour
 
     public bool GetPoolObject(){
         return objectToPool;
+    }
+    
+    public List<PoolableObject> GetObjectsInUse(){
+        return usedInstances;
     }
 
     #endregion

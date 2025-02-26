@@ -1,11 +1,17 @@
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerStats : EntityStats
 {
     const float energyRegenerationPercent = 0.15f; // PER SEC
+    const float timeBeforeRespawn = 5.0f;
+    
     public float maxEnergy = 1.0f;
 
+    private PlayerBase player;
     private float currentEnergy;
+    private float lifesLeft = 3;
 
 
     protected override void Start()
@@ -13,6 +19,7 @@ public class PlayerStats : EntityStats
         base.Start();
         
         currentEnergy = maxEnergy;
+        player = (PlayerBase) ownerEntity;
     }
         
 
@@ -28,6 +35,37 @@ public class PlayerStats : EntityStats
         
         currentEnergy = Mathf.Clamp(currentEnergy, 0.0f, maxEnergy);
     }
+
+    private async void ProducePlayerRespawn(){
+        // TODO - DESTROY EFFECT ETC
+        player.DeactivatePlayer(false);
+        player.playerBody.gameObject.SetActive(false);
+        player.GetPlayerWeapon().SetActive(false);
+
+        await Task.Delay(TimeSpan.FromSeconds(timeBeforeRespawn));
+        
+        player.playerBody.gameObject.SetActive(true);
+        player.ActivatePlayer();
+        currentEnergy = maxEnergy;
+        currentHealth = maxHealth;
+        player.ActivateInvulnurability();
+
+        await player.AnimateStartShowing();
+    }
+
+    protected override void Death()
+    {
+        lifesLeft--;
+        if(lifesLeft > 0){
+            ProducePlayerRespawn();
+            return;
+        }
+
+        // END GAME
+        MainLevelManagement.instance.ProduceFinishGame(MainLevelManagement.GameEndReasons.LOSE);
+    }
+
+
 
     #endregion
 

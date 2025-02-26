@@ -238,6 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 610d613007ea29049b94b3f8f4c0f67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerEntity: {fileID: 7570304598302453546}
   maxHealth: 1
   maxEnergy: 1
 --- !u!1 &7795232273578389155
@@ -338,4 +339,3 @@ MonoBehaviour:
   controllerCollisionMask:
     serializedVersion: 2
     m_Bits: 8
-  mainCamera: {fileID: 0}

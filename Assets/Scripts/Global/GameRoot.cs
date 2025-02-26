@@ -38,8 +38,22 @@ public class GameRoot : MonoBehaviour
         MainLevelManagement.instance.StartGame();
     }
 
-    public void ClearGameLevel(){
-        
+    public async void ClearGameLevel(){
+        // UNLOAD POOLS
+        DebugLog("Started clearing level");
+
+        objectsPoolManager.StartClearPools();
+        DebugLog("All pools cleared");
+
+        // CLEAR LEVEL
+        DebugLog("Started unload game level");
+        gameCamera.ReparentToRootScene();
+        activePlayer.Despawn();
+        await SceneManager.UnloadSceneAsync(activeLevelScene);
+
+        SetActiveLevel(default(Scene));
+        SetActivePlayer(null);
+        DebugLog("Game level unloaded");
     }
 
     public void DebugLog(string message){
@@ -54,7 +68,9 @@ public class GameRoot : MonoBehaviour
     }
 
     public void SetActivePlayer(PlayerBase player){
-        Assert.IsNull(activePlayer, "There already one active player");
+        if(player != null){
+            Assert.IsNull(activePlayer, "There already one active player");
+        }
 
         activePlayer = player;
     }
@@ -64,7 +80,9 @@ public class GameRoot : MonoBehaviour
     }
 
     public void SetActiveLevel(Scene level){
-        Assert.IsTrue(activeLevelScene == default(Scene), "There already one active level scene");
+        if(level != default(Scene)){
+            Assert.IsTrue(activeLevelScene == default(Scene), "There already one active level scene");
+        }
 
         activeLevelScene = level;
     }

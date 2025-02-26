@@ -5,7 +5,6 @@ using UnityEngine.InputSystem.Controls;
 public class PlayerController : MonoBehaviour
 {
     public LayerMask controllerCollisionMask;
-    public Camera mainCamera;
 
     private Rigidbody rigidBody;
     private bool canBeControlled = false;

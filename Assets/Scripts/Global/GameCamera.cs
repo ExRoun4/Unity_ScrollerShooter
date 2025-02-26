@@ -12,6 +12,9 @@ public class GameCamera : MonoBehaviour
     }
 
     public void ReparentToRootScene(){
+        transform.parent = null;
         SceneManager.MoveGameObjectToScene(this.gameObject, GameRoot.instance.GetRootScene());
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
     }
 }

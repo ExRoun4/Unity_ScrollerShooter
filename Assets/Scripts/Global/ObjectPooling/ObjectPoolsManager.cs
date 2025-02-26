@@ -32,6 +32,14 @@ public class ObjectPoolsManager : MonoBehaviour
         }
     }
 
+    public void StartClearPools(){
+        foreach(ObjectPool pool in objectToPoolDict.Values){
+            foreach(PoolableObject poolableObject in pool.GetObjectsInUse()){
+                poolableObject.Despawn();
+            }
+        }
+    }
+
     public async Awaitable InitPools(){
         foreach(ObjectPoolDecl poolDecl in objectPoolDecls){
             await CreatePool(poolDecl.objectToPool);
