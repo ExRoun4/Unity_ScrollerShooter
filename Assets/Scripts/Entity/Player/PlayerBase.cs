@@ -6,16 +6,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerBase : CharacterEntityBase
 {
-    [Serializable]
-    public class WeaponHolder {
-        public WEAPONS_INDEXES index;
-        public PlayerWeaponBase prefab;
-    }
-
-    public enum WEAPONS_INDEXES {
-        BASIC_WEAPON = 0
-    }
-
     const float moveForwardSpeed = 4.0f;
     const float playerBodyMoveOnStartSpeed = 14.0f;
     const float playerBodyHidedZOffset = -15.0f;
@@ -24,7 +14,6 @@ public class PlayerBase : CharacterEntityBase
     public Transform cameraMount;
     public PlayerController playerBody;
     public PlayerStats playerStats;
-    public WeaponHolder[] playerWeapons;
 
     private float bodyZPosOnStart;
     private bool isActive = false;
@@ -54,12 +43,20 @@ public class PlayerBase : CharacterEntityBase
         if(destroyWeapon) Destroy(currentWeapon);
     }
 
-    public void InitWeapon(WEAPONS_INDEXES weaponIndex, int weaponLevel){
-        WeaponHolder holder = GetWeaponHolderByIndex(weaponIndex);
-        if(holder == null || !holder.prefab) return;
+    public void InitWeapon(){
+        GameDataSystem.PlayerCurrentWeapon weapon = GameDataSystem.instance.GetPlayerData().currentWeapon;
+        if(!weapon.GetWeaponHolder().prefab) return;
 
-        currentWeapon = Instantiate(holder.prefab, playerBody.transform);
-        currentWeapon.Init(this, weaponLevel);
+        currentWeapon = Instantiate(weapon.GetWeaponHolder().prefab, playerBody.transform);
+        currentWeapon.Init(this, weapon.currentLevel);
+    }
+
+    public void InitShip(){
+        GameDataSystem.PlayerShipHolder shipHolder = GameDataSystem.instance.GetPlayerData().GetShip();
+        if(!shipHolder.modelPrefab) return;
+
+        Instantiate(shipHolder.modelPrefab, playerBody.transform);
+        playerStats.EvaluateAttributesFromShip(shipHolder.attributes);
     }
 
     #endregion
@@ -71,14 +68,6 @@ public class PlayerBase : CharacterEntityBase
         if(isActive){
             transform.position += Vector3.forward * moveForwardSpeed * Time.deltaTime;
         }
-    }
-
-    private WeaponHolder GetWeaponHolderByIndex(WEAPONS_INDEXES index){
-        foreach(WeaponHolder holder in playerWeapons){
-            if(holder.index == index) return holder;
-        }
-
-        return null;
     }
 
     #endregion

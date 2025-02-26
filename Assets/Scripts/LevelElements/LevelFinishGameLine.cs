@@ -7,7 +7,7 @@ public class LevelFinishGameLine : MonoBehaviour
 
     private void Update()
     {
-        if(MainLevelManagement.instance.GetGameState() != MainLevelManagement.GAME_STATE.STARTED) return;
+        if(MainLevelManagement.instance.GetGameState() != MainLevelManagement.GameState.STARTED) return;
 
         PlayerBase player = GameRoot.instance.GetActivePlayer();
         if(player.transform.position.z >= transform.position.z){

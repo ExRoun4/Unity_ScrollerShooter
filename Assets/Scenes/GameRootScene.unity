@@ -239,6 +239,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74478bddd21dc14408264b8a0d65f281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerWeapons:
+  - index: 0
+    prefab: {fileID: 7538524031557393071, guid: 6f4c33e59437ec14c86f905a151e131e, type: 3}
+  playerShips:
+  - index: 0
+    modelPrefab: {fileID: 5592367910132689515, guid: 87f2b8be463badd42853f64f3d1724ca, type: 3}
+    attributes:
+      maxHealth: 1
+      maxEnergy: 1
 --- !u!81 &1020233957458300939
 AudioListener:
   m_ObjectHideFlags: 0

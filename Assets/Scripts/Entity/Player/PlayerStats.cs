@@ -14,13 +14,24 @@ public class PlayerStats : EntityStats
     private float lifesLeft = 3;
 
 
+    #region INITIALIZATION
+
     protected override void Start()
     {
         base.Start();
         
-        currentEnergy = maxEnergy;
         player = (PlayerBase) ownerEntity;
     }
+
+    public void EvaluateAttributesFromShip(GameDataSystem.PlayerShipAttributes attributes){
+        maxHealth = attributes.maxHealth;
+        maxEnergy = attributes.maxEnergy;
+
+        currentHealth = maxHealth;
+        currentEnergy = maxEnergy;
+    }
+
+    #endregion
         
 
     #region BEHAVIOR

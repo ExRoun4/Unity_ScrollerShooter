@@ -38,7 +38,7 @@ public class EnemySpawner : MonoBehaviour
     }
 
     private void PlayModeLogic(){
-        if(MainLevelManagement.instance.GetGameState() != MainLevelManagement.GAME_STATE.STARTED) return;
+        if(MainLevelManagement.instance.GetGameState() != MainLevelManagement.GameState.STARTED) return;
         if(enemySpawned) return;
 
         // SPAWN

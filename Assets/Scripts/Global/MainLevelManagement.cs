@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MainLevelManagement : MonoBehaviour
 {
-    public enum GAME_STATE {
+    public enum GameState {
         NOT_INITIALIZED = 0,
         STARTED,
         GAME_LOSED,
@@ -24,7 +24,7 @@ public class MainLevelManagement : MonoBehaviour
     public GameObject projectilesParent;
     public LevelFinishGameLine finishGameLine;
 
-    private GAME_STATE currentGameState = GAME_STATE.NOT_INITIALIZED;
+    private GameState currentGameState = GameState.NOT_INITIALIZED;
     
 
     #region INITIALIZATION
@@ -64,7 +64,7 @@ public class MainLevelManagement : MonoBehaviour
     }
 
     private void CloseGame(){
-        currentGameState = GAME_STATE.EXITING_GAME;
+        currentGameState = GameState.EXITING_GAME;
 
         GameRoot.instance.GetActivePlayer().DeactivatePlayer();
         GameRoot.instance.ClearGameLevel();
@@ -87,19 +87,20 @@ public class MainLevelManagement : MonoBehaviour
         // INIT PLAYER
         PlayerBase player = GameRoot.instance.GetActivePlayer();
         player.ActivatePlayer();
-        player.InitWeapon(PlayerBase.WEAPONS_INDEXES.BASIC_WEAPON, 5); // TEST
+        player.InitShip();
+        player.InitWeapon();
 
-        currentGameState = GAME_STATE.STARTED;
+        currentGameState = GameState.STARTED;
     }
 
     public void ProduceFinishGame(GameEndReasons reason){
-        if(currentGameState != GAME_STATE.STARTED) return;
+        if(currentGameState != GameState.STARTED) return;
 
         if(reason == GameEndReasons.WIN){
-            currentGameState = GAME_STATE.GAME_WON;
+            currentGameState = GameState.GAME_WON;
             ProduceWinningGame();
         } else {
-            currentGameState = GAME_STATE.GAME_LOSED;
+            currentGameState = GameState.GAME_LOSED;
             ProduceLosedGame();
         }
     }
@@ -110,7 +111,7 @@ public class MainLevelManagement : MonoBehaviour
 
     #region SETTERS AND GETTERS
 
-    public GAME_STATE GetGameState(){
+    public GameState GetGameState(){
         return currentGameState;
     }
 
