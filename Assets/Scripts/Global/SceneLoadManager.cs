@@ -9,12 +9,8 @@ public class SceneLoadManager : MonoBehaviour
     public static SceneLoadManager instance;
 
 
-    private async void Start() {
+    private void Awake() {
         instance = this;
-
-        await Task.Yield();
-        
-        TryToLoadLevel("LevelSample");
     }
 
 

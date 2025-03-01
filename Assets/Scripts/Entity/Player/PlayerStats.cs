@@ -11,7 +11,6 @@ public class PlayerStats : EntityStats
 
     private PlayerBase player;
     private float currentEnergy;
-    private float lifesLeft = 3;
 
 
     #region INITIALIZATION
@@ -66,8 +65,8 @@ public class PlayerStats : EntityStats
 
     protected override void Death()
     {
-        lifesLeft--;
-        if(lifesLeft > 0){
+        GameDataSystem.instance.ReducePlayerLifes(1);
+        if(GameDataSystem.instance.GetPlayerData().lifesLeft > 0){
             ProducePlayerRespawn();
             return;
         }

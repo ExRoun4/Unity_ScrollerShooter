@@ -10,6 +10,7 @@ public class GameRoot : MonoBehaviour
     public PlayerBase playerPrefab;
     public GameCamera gameCamera;
     public ObjectPoolsManager objectsPoolManager;
+    public MainMenu mainMenu;
 
     private PlayerBase activePlayer;
     private Scene activeLevelScene;

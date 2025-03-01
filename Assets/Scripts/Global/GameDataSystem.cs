@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
@@ -20,13 +21,13 @@ public class GameDataSystem : MonoBehaviour
     #region DATA HOLDERS
 
     [Serializable]
-    public class PlayerWeaponHolder {
+    public struct PlayerWeaponHolder {
         public PlayerWeapons index;
         public PlayerWeaponBase prefab;
     }
 
     [Serializable]
-    public class PlayerCurrentWeapon {
+    public class PlayerWeaponData {
         public int weaponIndex = 0;
         public int currentLevel = 1;
 
@@ -36,10 +37,10 @@ public class GameDataSystem : MonoBehaviour
     }
 
     [Serializable]
-    public class PlayerShipHolder {
+    public struct PlayerShipHolder {
         public PlayerShips index;
         public GameObject modelPrefab;
-        public PlayerShipAttributes attributes = new ();
+        public PlayerShipAttributes attributes;
     }
 
     [Serializable]
@@ -60,11 +61,68 @@ public class GameDataSystem : MonoBehaviour
 
     [Serializable]
     public class PlayerData {
-        public PlayerCurrentWeapon currentWeapon;
-        public int currentShipIndex;
+        public const int START_PLAYER_LIFES = 3;
+
+        public int currentWeaponIndex = 0;
+        public List<PlayerWeaponData> allWeaponsData = new ();
+        public int currentShipIndex = 0;
+        public int currentCurrency = 0;
+        public int lifesLeft = 3;
+
+        public int currentLevelIndex = 0; // ALL LEVEL DATA STORED IN GAMEROOT
+
+        public bool isDirty = false;
+
 
         public PlayerShipHolder GetShip(){
             return GameDataSystem.instance.playerShips[currentShipIndex];
+        }
+
+        public PlayerWeaponData GetCurrentWeapon(){
+            return allWeaponsData[currentWeaponIndex];
+        }
+
+        public void Reset(){
+            currentWeaponIndex = 0;
+            currentShipIndex = 0;
+            currentCurrency = 0;
+            lifesLeft = 3;
+            currentLevelIndex = 0;
+            isDirty = false;
+
+            RebuildWeaponsData();
+        }
+
+        public void RebuildWeaponsData(){
+            allWeaponsData.Clear();
+            PlayerWeaponHolder[] playerWeapons = GameDataSystem.instance.playerWeapons;
+
+            for(int i = 0; i < playerWeapons.Length; i++){
+                AppendNewWeapon(i);
+            }
+        }
+
+        public void CheckWeaponsForCompability(){
+            PlayerWeaponHolder[] playerWeapons = GameDataSystem.instance.playerWeapons;
+            if(allWeaponsData.Count == playerWeapons.Length) return;
+
+            // REMOVE EXCESS
+            if(allWeaponsData.Count > playerWeapons.Length) {
+                allWeaponsData = new List<PlayerWeaponData>(playerWeapons.Length);
+                return;
+            }
+
+            // APPEND NEW
+            for(int i = 0; i < playerWeapons.Length; i++){
+                if(i <= allWeaponsData.Count - 1) continue;
+                AppendNewWeapon(i);
+            }
+        }
+
+        private void AppendNewWeapon(int index){
+            PlayerWeaponData newData = new ();
+            newData.weaponIndex = index;
+            allWeaponsData.Add(newData);
         }
     }
 
@@ -113,6 +171,7 @@ public class GameDataSystem : MonoBehaviour
         using(StreamReader reader = new StreamReader(dataSavePath)){
             string json = reader.ReadToEnd();
             playerData = JsonUtility.FromJson<PlayerData>(json);
+            playerData.CheckWeaponsForCompability();
 
             DebugLog("Player data loaded");
         }
@@ -122,12 +181,15 @@ public class GameDataSystem : MonoBehaviour
         DebugLog("Save file not found, initializing default data");
         
         playerData = new();
-        playerData.currentWeapon = new PlayerCurrentWeapon();
+        playerData.currentWeaponIndex = 0;
+        playerData.RebuildWeaponsData();
 
-        SaveData();
+        SaveData(false);
     }
 
-    public void SaveData(){
+    public void SaveData(bool makeDataDirty = true){
+        playerData.isDirty = makeDataDirty;
+
         string directory = Path.GetDirectoryName(@dataSavePath);
         Directory.CreateDirectory(directory);
 
@@ -151,10 +213,44 @@ public class GameDataSystem : MonoBehaviour
     #endregion
 
 
+    #region DATA ACTIONS
+
+    public void ResetPlayerData(){
+        playerData.Reset();
+        SaveData(false);
+    }
+
+    public void ReducePlayerLifes(int withValue){
+        playerData.lifesLeft -= withValue;
+        SaveData();
+    }
+
+    public void RestorePlayerLifes(){
+        playerData.lifesLeft = PlayerData.START_PLAYER_LIFES;
+        SaveData();
+    }
+
+    public void IncreaseCurrentLevelIndex(){
+        playerData.currentLevelIndex++;
+        SaveData();
+    }
+
+    public void AddPlayerCurrency(int value){
+        playerData.currentCurrency += value;
+        SaveData();
+    }
+
+    #endregion
+
+
     #region SETTERS AND GETTERS
 
     public PlayerData GetPlayerData(){
         return playerData;
+    }
+
+    public bool IsDataDirty(){
+        return playerData.isDirty;
     }
 
     #endregion

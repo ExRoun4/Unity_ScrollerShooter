@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class MainLevelManagement : MonoBehaviour
 {
+    #region ENUMS
+
     public enum GameState {
         NOT_INITIALIZED = 0,
         STARTED,
@@ -17,15 +20,24 @@ public class MainLevelManagement : MonoBehaviour
         WIN = 0, 
         LOSE
     }
+    
+    #endregion
+
+    [Serializable]
+    public struct LevelData {
+        public int levelWinReward;
+    }
 
     public static MainLevelManagement instance;
     
     public GameObject enemiesParent;
     public GameObject projectilesParent;
     public LevelFinishGameLine finishGameLine;
+    public LevelData levelData;
 
     private GameState currentGameState = GameState.NOT_INITIALIZED;
-    
+    private int playerEarnedCurrency;
+
 
     #region INITIALIZATION
 
@@ -56,10 +68,15 @@ public class MainLevelManagement : MonoBehaviour
             break;
         }
         
+        GameDataSystem.instance.IncreaseCurrentLevelIndex();
+        GameDataSystem.instance.AddPlayerCurrency(playerEarnedCurrency + levelData.levelWinReward);
+        
         CloseGame();
     }
 
     private void ProduceLosedGame(){
+        GameDataSystem.instance.RestorePlayerLifes();
+
         CloseGame();
     }
 

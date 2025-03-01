@@ -44,7 +44,7 @@ public class PlayerBase : CharacterEntityBase
     }
 
     public void InitWeapon(){
-        GameDataSystem.PlayerCurrentWeapon weapon = GameDataSystem.instance.GetPlayerData().currentWeapon;
+        GameDataSystem.PlayerWeaponData weapon = GameDataSystem.instance.GetPlayerData().GetCurrentWeapon();
         if(!weapon.GetWeaponHolder().prefab) return;
 
         currentWeapon = Instantiate(weapon.GetWeaponHolder().prefab, playerBody.transform);
