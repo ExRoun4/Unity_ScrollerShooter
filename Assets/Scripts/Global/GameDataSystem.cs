@@ -30,6 +30,7 @@ public class GameDataSystem : MonoBehaviour
     public class PlayerWeaponData {
         public int weaponIndex = 0;
         public int currentLevel = 1;
+        public bool isPurchased = false;
 
         public PlayerWeaponHolder GetWeaponHolder(){
             return GameDataSystem.instance.playerWeapons[weaponIndex];
@@ -63,15 +64,26 @@ public class GameDataSystem : MonoBehaviour
     public class PlayerData {
         public const int START_PLAYER_LIFES = 3;
 
-        public int currentWeaponIndex = 0;
         public List<PlayerWeaponData> allWeaponsData = new ();
+        public int currentWeaponIndex {
+            get => m_currentWeaponIndex;
+            set {m_currentWeaponIndex = value; weaponChanged.emit();}
+        }
+        public int currentCurrency {
+            get => m_currentCurrency;
+            set {m_currentCurrency = value; currencyChanged.emit();}
+        }
         public int currentShipIndex = 0;
-        public int currentCurrency = 0;
         public int lifesLeft = 3;
-
         public int currentLevelIndex = 0; // ALL LEVEL DATA STORED IN GAMEROOT
 
         public bool isDirty = false;
+        
+        public GlobalSignal currencyChanged = new ();
+        public GlobalSignal weaponChanged = new ();
+
+        private int m_currentWeaponIndex = 0;
+        private int m_currentCurrency = 0;
 
 
         public PlayerShipHolder GetShip(){
@@ -98,7 +110,7 @@ public class GameDataSystem : MonoBehaviour
             PlayerWeaponHolder[] playerWeapons = GameDataSystem.instance.playerWeapons;
 
             for(int i = 0; i < playerWeapons.Length; i++){
-                AppendNewWeapon(i);
+                AppendNewWeapon(i, i == 0);
             }
         }
 
@@ -115,13 +127,14 @@ public class GameDataSystem : MonoBehaviour
             // APPEND NEW
             for(int i = 0; i < playerWeapons.Length; i++){
                 if(i <= allWeaponsData.Count - 1) continue;
-                AppendNewWeapon(i);
+                AppendNewWeapon(i, i == 0);
             }
         }
 
-        private void AppendNewWeapon(int index){
+        private void AppendNewWeapon(int index, bool setPurchased = false){
             PlayerWeaponData newData = new ();
             newData.weaponIndex = index;
+            newData.isPurchased = setPurchased;
             allWeaponsData.Add(newData);
         }
     }
@@ -129,6 +142,7 @@ public class GameDataSystem : MonoBehaviour
     #endregion
 
     const string fileName = "GameData";
+    public const int PLAYER_WEAPONS_MAX_LEVEL = 5;
     
     public static GameDataSystem instance;
 
@@ -231,7 +245,7 @@ public class GameDataSystem : MonoBehaviour
     }
 
     public void IncreaseCurrentLevelIndex(){
-        playerData.currentLevelIndex++;
+        playerData.currentLevelIndex = Mathf.Min(playerData.currentLevelIndex + 1, SceneLoadManager.instance.levels.Count - 1);
         SaveData();
     }
 

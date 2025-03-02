@@ -23,7 +23,7 @@ public class GameRoot : MonoBehaviour
     }
 
 
-    public async void InitGameOnLevel(Scene level){
+    public async Awaitable InitGameOnLevel(Scene level){
         // POOLING
         DebugLog("Started pooling objects");
         await objectsPoolManager.StartPooling();
@@ -39,7 +39,9 @@ public class GameRoot : MonoBehaviour
         MainLevelManagement.instance.StartGame();
     }
 
-    public async void ClearGameLevel(){
+    public async void ExitGameLevel(){
+        await mainMenu.ShowBlackHider();
+
         // UNLOAD POOLS
         DebugLog("Started clearing level");
 
@@ -55,6 +57,9 @@ public class GameRoot : MonoBehaviour
         SetActiveLevel(default(Scene));
         SetActivePlayer(null);
         DebugLog("Game level unloaded");
+
+        Cursor.visible = true;
+        mainMenu.EnterGameLobby(false);
     }
 
     public void DebugLog(string message){

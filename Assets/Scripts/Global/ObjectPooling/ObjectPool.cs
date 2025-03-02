@@ -8,6 +8,7 @@ public class ObjectPool : MonoBehaviour
     public int poolAmount = 20;
     public bool additionalPoolOnAbsence = true;
     public PoolableObject objectToPool;
+    public bool pooled;
 
     private List<PoolableObject> availableInstances = new List<PoolableObject>();
     private List<PoolableObject> usedInstances = new List<PoolableObject>();
@@ -16,6 +17,7 @@ public class ObjectPool : MonoBehaviour
     #region POOLING
 
     public async Awaitable StartPool(int toPoolAmount = 0){
+        if(pooled) return;
         if(toPoolAmount == 0) toPoolAmount = poolAmount;
 
         isPooling = true;
@@ -33,6 +35,7 @@ public class ObjectPool : MonoBehaviour
         }
 
         isPooling = false;
+        pooled = true;
     }
 
     public PoolableObject ForceSpawnAndPool(){

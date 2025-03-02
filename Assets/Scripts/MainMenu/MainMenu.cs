@@ -7,24 +7,32 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour
 {
     const float BLACKHIDER_FADEIN_TIME = 1.0f;
-    const float BLACKHIDER_FADEDIN_TIME = 0.5f;
+    const float BLACKHIDER_FADED_STATIC_TIME = 0.5f;
     const float BLACKHIDER_FADEOUT_TIME = 5.5f;
 
+    [Header("MAIN ELEMENTS")]
     public GameObject main;
-    public GameObject gameLobby;
+    public GameLobby gameLobby;
     public GameObject newGameAlertPanel;
     public RawImage blackHider;
+    [Space(10)]
+    
+    [Header("OTHER GUI ELEMENTS")]
+    public Button continueButton;
 
 
     private void Start()
     {
-        main.SetActive(true);
-
-        gameLobby.SetActive(false);
-        newGameAlertPanel.SetActive(false);
-
+        InitGUI();
         blackHider.color = Color.black;
         HideBlackHider();
+    }
+
+    private void InitGUI(){
+        main.SetActive(true);
+        gameLobby.gameObject.SetActive(false);
+        newGameAlertPanel.SetActive(false);
+        continueButton.interactable = GameDataSystem.instance.IsDataDirty();
     }
 
     #region MAIN ACTIONS
@@ -38,15 +46,26 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    public async void EnterGameLobby(){
-        await ShowBlackHider();
+    public async void EnterGameLobby(bool showBlackHider = true){
+        if(showBlackHider) await ShowBlackHider();
 
         HideAndResetMainPanel();
         newGameAlertPanel.SetActive(false);
-        gameLobby.SetActive(true);
+        gameLobby.gameObject.SetActive(true);
 
-        await Task.Delay(TimeSpan.FromSeconds(BLACKHIDER_FADEDIN_TIME));
+        await Task.Delay(TimeSpan.FromSeconds(BLACKHIDER_FADED_STATIC_TIME));
         await HideBlackHider();
+    }
+
+    public async void StartGame(){
+        await ShowBlackHider();
+
+        gameLobby.gameObject.SetActive(false);
+
+        await Task.Delay(TimeSpan.FromSeconds(BLACKHIDER_FADED_STATIC_TIME));
+        await SceneLoadManager.instance.TryToLoadGameLevel();
+
+        HideBlackHider();
     }
 
     public void HideAndResetMainPanel(){

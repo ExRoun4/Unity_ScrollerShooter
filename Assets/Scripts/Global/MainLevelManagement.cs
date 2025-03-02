@@ -48,7 +48,6 @@ public class MainLevelManagement : MonoBehaviour
     }
 
     private void ProduceAsserting(){
-        Assert.IsNull(instance, "[LevelManagement] There already 1 level management instance");
         Assert.IsNotNull(enemiesParent, "[LevelManagement] Missing enemiesParent object");
         Assert.IsNotNull(projectilesParent, "[LevelManagement] Missing projectilesParent object");
         Assert.IsNotNull(finishGameLine, "[LevelManagement] Missing finishGameLine");
@@ -84,7 +83,7 @@ public class MainLevelManagement : MonoBehaviour
         currentGameState = GameState.EXITING_GAME;
 
         GameRoot.instance.GetActivePlayer().DeactivatePlayer();
-        GameRoot.instance.ClearGameLevel();
+        GameRoot.instance.ExitGameLevel();
     }
 
     #endregion
