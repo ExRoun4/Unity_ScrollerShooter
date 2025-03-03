@@ -1,0 +1,16 @@
+*GameDataSystem, GameRoot - stored in MainManagement object in GameRootScene
+
+Adding new weapon:
+- Add new index to PlayerWeapons ( GameDataSystem )
+- Create and configure weapon prefab ( Prefabs/Entity/Player/Weapons )
+- Add new PlayerWeapon and access weapon prefab to Player Weapons in GameDataSystem inspector
+- Create WeaponShopItem and configure ( Prefabs/MainMenu/GameLobby/WeaponsItems )
+- Add new WeaponShopItem to MainMenu -> GameLobby -> MainTabs -> Weapons
+
+Adding new ship:
+- Add new index to PlayerShip ( GameDataSystem )
+- Create new ship model prefab ( Prefabs/Entity/Player/ShipsModels )
+- Add new PlayerShip in GameDataSystem inspector, access new model and configure attrubutes
+
+
+

@@ -13,10 +13,11 @@ public class GameDataSystem : MonoBehaviour
     }
 
     public enum PlayerShips {
-        START_JET = 0
+        JET_V1 = 0
     }
 
     #endregion
+
 
     #region DATA HOLDERS
 
@@ -58,32 +59,25 @@ public class GameDataSystem : MonoBehaviour
     #endregion
 
 
-    #region DATA CLASSES
-
     [Serializable]
     public class PlayerData {
         public const int START_PLAYER_LIFES = 3;
 
         public List<PlayerWeaponData> allWeaponsData = new ();
-        public int currentWeaponIndex {
-            get => m_currentWeaponIndex;
-            set {m_currentWeaponIndex = value; weaponChanged.emit();}
-        }
-        public int currentCurrency {
-            get => m_currentCurrency;
-            set {m_currentCurrency = value; currencyChanged.emit();}
-        }
+        public List<int> purchasedShipsIndexes = new () {0};
+
+        public int currentWeaponIndex = 0;
+        public int currentCurrency = 0;
         public int currentShipIndex = 0;
         public int lifesLeft = 3;
+        public float healthLeft = 1.0f;
         public int currentLevelIndex = 0; // ALL LEVEL DATA STORED IN GAMEROOT
 
         public bool isDirty = false;
         
         public GlobalSignal currencyChanged = new ();
         public GlobalSignal weaponChanged = new ();
-
-        private int m_currentWeaponIndex = 0;
-        private int m_currentCurrency = 0;
+        public GlobalSignal shipChanged = new ();
 
 
         public PlayerShipHolder GetShip(){
@@ -99,6 +93,7 @@ public class GameDataSystem : MonoBehaviour
             currentShipIndex = 0;
             currentCurrency = 0;
             lifesLeft = 3;
+            healthLeft = GameDataSystem.instance.playerShips[0].attributes.maxHealth;
             currentLevelIndex = 0;
             isDirty = false;
 
@@ -139,7 +134,6 @@ public class GameDataSystem : MonoBehaviour
         }
     }
 
-    #endregion
 
     const string fileName = "GameData";
     public const int PLAYER_WEAPONS_MAX_LEVEL = 5;
@@ -195,8 +189,7 @@ public class GameDataSystem : MonoBehaviour
         DebugLog("Save file not found, initializing default data");
         
         playerData = new();
-        playerData.currentWeaponIndex = 0;
-        playerData.RebuildWeaponsData();
+        playerData.Reset();
 
         SaveData(false);
     }
@@ -244,13 +237,73 @@ public class GameDataSystem : MonoBehaviour
         SaveData();
     }
 
+    public void SetPlayerHealthLeft(float value){
+        playerData.healthLeft = value;
+    }
+
     public void IncreaseCurrentLevelIndex(){
         playerData.currentLevelIndex = Mathf.Min(playerData.currentLevelIndex + 1, SceneLoadManager.instance.levels.Count - 1);
         SaveData();
     }
 
-    public void AddPlayerCurrency(int value){
+    public void AddPlayerCurrency(int value, bool save = true){
         playerData.currentCurrency += value;
+        playerData.currencyChanged.emit();
+
+        if(save) SaveData();
+    }
+
+    public void ReducePlayerCurrency(int value, bool save = true){
+        playerData.currentCurrency -= value;
+        playerData.currencyChanged.emit();
+
+        if(save) SaveData();
+    }
+
+    public void PurhcaseWeapon(int weaponIndex, int price){
+        playerData.allWeaponsData[weaponIndex].isPurchased = true;
+
+        ReducePlayerCurrency(price, false);
+        SaveData();
+    }
+
+    public void UpgradeWeapon(int weaponIndex, int price){
+        playerData.allWeaponsData[weaponIndex].currentLevel = Mathf.Min(
+            playerData.allWeaponsData[weaponIndex].currentLevel + 1,
+            PLAYER_WEAPONS_MAX_LEVEL
+        );
+
+        ReducePlayerCurrency(price, false);
+        SaveData();
+    }
+
+    public void ChooseWeapon(int weaponIndex){
+        playerData.currentWeaponIndex = weaponIndex;
+        playerData.weaponChanged.emit();
+
+        SaveData();
+    }
+
+    public void AddCurrentShipIndexValue(int value){
+        playerData.currentShipIndex += value;
+        playerData.shipChanged.emit();
+
+        SaveData();
+    }
+
+    public void RestorePlayerCurrentHealth(int price){
+        playerData.healthLeft = playerShips[playerData.currentShipIndex].attributes.maxHealth;
+
+        ReducePlayerCurrency(price, false);
+        SaveData();
+    }
+
+    public void UpgradeShipToNew(int price){
+        playerData.currentShipIndex++;
+        playerData.purchasedShipsIndexes.Add(playerData.currentShipIndex);
+        playerData.healthLeft = playerShips[playerData.currentShipIndex].attributes.maxHealth;
+
+        ReducePlayerCurrency(price, false);
         SaveData();
     }
 

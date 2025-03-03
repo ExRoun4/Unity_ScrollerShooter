@@ -68,9 +68,7 @@ public class MainLevelManagement : MonoBehaviour
         }
         
         GameDataSystem.instance.IncreaseCurrentLevelIndex();
-        GameDataSystem.instance.AddPlayerCurrency(playerEarnedCurrency + levelData.levelWinReward);
-        
-        CloseGame();
+        CloseGame(levelData.levelWinReward);
     }
 
     private void ProduceLosedGame(){
@@ -79,8 +77,11 @@ public class MainLevelManagement : MonoBehaviour
         CloseGame();
     }
 
-    private void CloseGame(){
+    private void CloseGame(int levelWinReward = 0){
         currentGameState = GameState.EXITING_GAME;
+
+        GameDataSystem.instance.SetPlayerHealthLeft(GameRoot.instance.GetActivePlayer().playerStats.GetCurrentHealth());
+        GameDataSystem.instance.AddPlayerCurrency(playerEarnedCurrency + levelWinReward);
 
         GameRoot.instance.GetActivePlayer().DeactivatePlayer();
         GameRoot.instance.ExitGameLevel();

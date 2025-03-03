@@ -60,6 +60,7 @@ public class GameRoot : MonoBehaviour
 
         Cursor.visible = true;
         mainMenu.EnterGameLobby(false);
+        
     }
 
     public void DebugLog(string message){
@@ -95,6 +96,10 @@ public class GameRoot : MonoBehaviour
 
     public Scene GetRootScene(){
         return SceneManager.GetSceneByName("GameRootScene");
+    }
+
+    public bool IsInGame(){
+        return GetActiveLevel() != default(Scene);
     }
 
     #endregion

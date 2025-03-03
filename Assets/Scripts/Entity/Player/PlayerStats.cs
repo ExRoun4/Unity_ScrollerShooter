@@ -17,8 +17,6 @@ public class PlayerStats : EntityStats
 
     protected override void Start()
     {
-        base.Start();
-        
         player = (PlayerBase) ownerEntity;
     }
 
@@ -26,7 +24,7 @@ public class PlayerStats : EntityStats
         maxHealth = attributes.maxHealth;
         maxEnergy = attributes.maxEnergy;
 
-        currentHealth = maxHealth;
+        currentHealth = GameDataSystem.instance.GetPlayerData().healthLeft;
         currentEnergy = maxEnergy;
     }
 

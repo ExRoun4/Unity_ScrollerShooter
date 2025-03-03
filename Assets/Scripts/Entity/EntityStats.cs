@@ -5,7 +5,7 @@ public class EntityStats : MonoBehaviour
     public PoolableObject ownerEntity;
     public float maxHealth = 1.0f;
 
-    protected float currentHealth;
+    public float currentHealth;
     protected bool isInvulnerable = false;
 
 
@@ -29,7 +29,7 @@ public class EntityStats : MonoBehaviour
     }
 
     public void DamageEntityByPercent(float percent){
-        DamageEntity(currentHealth / maxHealth * percent);
+        DamageEntity(percent * maxHealth);
     }
 
     #region SETTERS AND GETTERS
@@ -40,6 +40,10 @@ public class EntityStats : MonoBehaviour
 
     public void SetInvulnerable(bool value){
         isInvulnerable = value;
+    }
+
+    public float GetCurrentHealth(){
+        return currentHealth;
     }
 
     #endregion

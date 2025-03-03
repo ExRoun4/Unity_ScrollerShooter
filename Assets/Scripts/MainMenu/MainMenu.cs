@@ -6,13 +6,15 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    public static MainMenu instance;
+
     const float BLACKHIDER_FADEIN_TIME = 1.0f;
     const float BLACKHIDER_FADED_STATIC_TIME = 0.5f;
     const float BLACKHIDER_FADEOUT_TIME = 5.5f;
 
     [Header("MAIN ELEMENTS")]
     public GameObject main;
-    public GameLobby gameLobby;
+    public GameObject gameLobby;
     public GameObject newGameAlertPanel;
     public RawImage blackHider;
     [Space(10)]
@@ -20,6 +22,12 @@ public class MainMenu : MonoBehaviour
     [Header("OTHER GUI ELEMENTS")]
     public Button continueButton;
 
+    public GlobalSignal gameLobbyLoaded = new ();
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start()
     {
@@ -52,6 +60,7 @@ public class MainMenu : MonoBehaviour
         HideAndResetMainPanel();
         newGameAlertPanel.SetActive(false);
         gameLobby.gameObject.SetActive(true);
+        gameLobbyLoaded.emit();
 
         await Task.Delay(TimeSpan.FromSeconds(BLACKHIDER_FADED_STATIC_TIME));
         await HideBlackHider();
